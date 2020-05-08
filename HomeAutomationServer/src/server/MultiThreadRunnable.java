@@ -9,7 +9,7 @@ import java.net.Socket;
 
 import javax.swing.JTable.PrintMode;
 
-import vo.TestVO;
+import model.TestVO;
 
 public class MultiThreadRunnable implements Runnable {
 	Socket socket;
@@ -44,29 +44,43 @@ public class MultiThreadRunnable implements Runnable {
 			while ((msg = bufferedReader.readLine()) != null) {
 //				msg = bufferedReader.readLine();
 				System.out.println(msg);
-				if (msg.contains("1TEMPRATURE"))
-
-					vo.setTemp1(msg.replaceFirst("1TEMPRATURE", ""));
-				if (msg.contains("2TEMPRATURE"))
-					vo.setTemp1(msg.replaceFirst("2TEMPRATURE", ""));
-				if (msg.contains("3TEMPRATURE"))
-					vo.setTemp1(msg.replaceFirst("3TEMPRATURE", ""));
+//				if (msg.contains("1TEMPRATURE"))
+//					vo.setTemp1(msg.replaceFirst("/1TEMPRATURE", ""));
+//				if (msg.contains("2TEMPRATURE"))
+//					vo.setTemp1(msg.replaceFirst("/2TEMPRATURE", ""));
+//				if (msg.contains("3TEMPRATURE"))
+//					vo.setTemp1(msg.replaceFirst("/3TEMPRATURE", ""));
+//				
+//				if(msg.contains("1TEMPRATURE")) {
+//					System.out.println("넘어가는 객체 : " + vo.getTemp1());
+//					try {
+//						objectOutputStream.writeObject(vo);
+//						objectOutputStream.flush();
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					
+//				}
 				
-				try {
-					System.out.println("test : " + vo.getTemp1());
-					objectOutputStream.writeObject(vo);
-					objectOutputStream.flush();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} // 데이터 직렬화
 				
-				
-				System.out.println("확인 : " + vo.getTemp1());
+				vo.setTemp1(msg.replaceFirst("/1TEMPRATURE", ""));
+				objectOutputStream.writeObject(vo);
+				objectOutputStream.flush();
 
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				socket.close();
+				objectOutputStream.close();
+				bufferedReader.close();
+				printWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 		}
 	}
 

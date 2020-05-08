@@ -17,7 +17,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
-import vo.TestVO;
+import model.TestVO;
 
 public class RxTx extends Application {
 	private TextArea ta;
@@ -29,6 +29,7 @@ public class RxTx extends Application {
 	SharedObject sharedObject = new SharedObject();
 	TestVO vo = new TestVO();
 	ObjectOutputStream objectOutputStream;
+	Object obj = new Object();
 
 	// private BufferedWriter socketBW;
 
@@ -57,19 +58,16 @@ public class RxTx extends Application {
 
 					try {
 						serverSocket = new ServerSocket(1357);
+						printMSG("연결성공");
 
 						while (true) {
-							socket = serverSocket.accept();
-							
-							runnable = new MultiThreadRunnable(socket, sharedObject, vo, objectOutputStream);
-							sharedObject.add(runnable);
-							executorService.execute(runnable);
-			
-							try {
-								objectOutputStream.flush();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+							synchronized (obj) {
+								
+								socket = serverSocket.accept();
+								runnable = new MultiThreadRunnable(socket, sharedObject, vo, objectOutputStream);
+								sharedObject.add(runnable);
+								executorService.execute(runnable);
+
 							}
 						}
 
@@ -77,12 +75,9 @@ public class RxTx extends Application {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
 				}
 			};
-
-			Thread t = new Thread(r);
-			t.start();
+			executorService.execute(r);
 		});
 
 		FlowPane flowPane = new FlowPane();
