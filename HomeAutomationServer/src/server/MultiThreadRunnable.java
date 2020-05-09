@@ -6,8 +6,9 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
-import javax.swing.JTable.PrintMode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import model.TestVO;
 
@@ -19,10 +20,15 @@ public class MultiThreadRunnable implements Runnable {
 	TestVO vo;
 	ObjectOutputStream objectOutputStream;
 
+	// client, module list 생성
+
+
+
 	// Construction injection
 	// Constructor - Socket과 공용객체를 답아와 초기화 해준다
-	public MultiThreadRunnable(Socket socket, SharedObject sharedObject, TestVO vo, ObjectOutputStream objectOutputStream) {
-		
+	public MultiThreadRunnable(Socket socket, SharedObject sharedObject, TestVO vo,
+			ObjectOutputStream objectOutputStream) {
+
 		this.socket = socket;
 		this.sharedObject = sharedObject;
 		this.vo = vo;
@@ -43,7 +49,7 @@ public class MultiThreadRunnable implements Runnable {
 		try {
 			while ((msg = bufferedReader.readLine()) != null) {
 //				msg = bufferedReader.readLine();
-				System.out.println(msg);
+				System.out.println("test=="+msg);
 //				if (msg.contains("1TEMPRATURE"))
 //					vo.setTemp1(msg.replaceFirst("/1TEMPRATURE", ""));
 //				if (msg.contains("2TEMPRATURE"))
@@ -62,11 +68,21 @@ public class MultiThreadRunnable implements Runnable {
 //					}
 //					
 //				}
-				
-				
+				if (msg.contains("ID")) {
+					msg = msg.replace("/ID", "/");
+					
+					sharedObject.add(msg,this);
+				}
+
 				vo.setTemp1(msg.replaceFirst("/1TEMPRATURE", ""));
-				objectOutputStream.writeObject(vo);
-				objectOutputStream.flush();
+
+				ObjectMapper objectMapper = new ObjectMapper();
+				String jsonData = objectMapper.writeValueAsString(vo);
+				System.out.println("JSON DATA==" + jsonData);
+				printWriter.println(jsonData);
+				printWriter.flush();
+//				objectOutputStream.writeObject(vo);
+//				objectOutputStream.flush();
 
 			}
 		} catch (IOException e) {
@@ -80,7 +96,7 @@ public class MultiThreadRunnable implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
 	}
 

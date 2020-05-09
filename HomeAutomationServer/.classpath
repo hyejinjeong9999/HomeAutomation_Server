@@ -10,5 +10,8 @@
 	<classpathentry kind="lib" path="lib/javafx.fxml.jar"/>
 	<classpathentry kind="lib" path="lib/javafx.graphics.jar"/>
 	<classpathentry kind="lib" path="lib/javafx.media.jar"/>
+	<classpathentry kind="lib" path="Jackson/jackson-annotations-2.8.1.jar"/>
+	<classpathentry kind="lib" path="Jackson/jackson-core-2.8.1.jar"/>
+	<classpathentry kind="lib" path="Jackson/jackson-databind-2.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -62,10 +62,10 @@ public class RxTx extends Application {
 
 						while (true) {
 							synchronized (obj) {
-								
+
 								socket = serverSocket.accept();
 								runnable = new MultiThreadRunnable(socket, sharedObject, vo, objectOutputStream);
-								sharedObject.add(runnable);
+
 								executorService.execute(runnable);
 
 							}
