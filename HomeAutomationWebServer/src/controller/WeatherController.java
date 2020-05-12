@@ -18,7 +18,7 @@ import vo.WeatherVO;
 /**
  * Servlet implementation class WeatherController
  */
-@WebServlet("/getWeather")
+@WebServlet("/Weather")
 public class WeatherController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 

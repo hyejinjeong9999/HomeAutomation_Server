@@ -6,9 +6,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.StringTokenizer;
 
 import model.TestVO;
 
@@ -19,22 +17,25 @@ public class MultiThreadRunnable implements Runnable {
 	SharedObject sharedObject;
 	TestVO vo;
 	ObjectOutputStream objectOutputStream;
+	StringTokenizer st;
+	String moduleID;
 
 	// client, module list 생성
 
-
+	public String getModuleID() {
+		return moduleID;
+	}
 
 	// Construction injection
 	// Constructor - Socket과 공용객체를 답아와 초기화 해준다
 	public MultiThreadRunnable(Socket socket, SharedObject sharedObject, TestVO vo,
 			ObjectOutputStream objectOutputStream) {
-
 		this.socket = socket;
 		this.sharedObject = sharedObject;
 		this.vo = vo;
 		this.objectOutputStream = objectOutputStream;
 		try {
-			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 			this.printWriter = new PrintWriter(socket.getOutputStream());
 			this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
@@ -47,52 +48,73 @@ public class MultiThreadRunnable implements Runnable {
 		// Client 로부터 넘어온 'MSG' 를 판별하여 기능 실행
 		String msg = "";
 		try {
+			
+			//안드로이드가 먼저 접속할땐 에러 x
+			//안드로이드 list가 null인 상태에서 값을 넣어주면 에러가 뜸
 			while ((msg = bufferedReader.readLine()) != null) {
-//				msg = bufferedReader.readLine();
-				System.out.println("test=="+msg);
-//				if (msg.contains("1TEMPRATURE"))
-//					vo.setTemp1(msg.replaceFirst("/1TEMPRATURE", ""));
-//				if (msg.contains("2TEMPRATURE"))
-//					vo.setTemp1(msg.replaceFirst("/2TEMPRATURE", ""));
-//				if (msg.contains("3TEMPRATURE"))
-//					vo.setTemp1(msg.replaceFirst("/3TEMPRATURE", ""));
-//				
-//				if(msg.contains("1TEMPRATURE")) {
-//					System.out.println("넘어가는 객체 : " + vo.getTemp1());
-//					try {
-//						objectOutputStream.writeObject(vo);
-//						objectOutputStream.flush();
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					
-//				}
-				if (msg.contains("ID")) {
-					msg = msg.replace("/ID", "/");
+				st = new StringTokenizer(msg, " ");
+
+				System.out.println("test==" + msg);
+
+				if (msg.contains("/ID:")) {
+					System.out.println(msg);
+					//msg = msg.replace("/ID:", "");
 					
-					sharedObject.add(msg,this);
+					//ID가 IN 이면
+					if(msg.contains("IN")) {
+						System.out.println("IN");
+						this.moduleID = msg;
+						System.out.println(msg);
+						sharedObject.add(msg, this);
+						continue;
+						
+					}
+					//IT가 OUT이면 
+					else {
+						sharedObject.disconn(moduleID, MultiThreadRunnable.this);
+
+						continue;
+						
+						
+					}
+				
+					
+					
+				
+				}else{
+					vo.setTemp(st.nextToken().replace("/TEMPRATURE:", ""));
+					vo.setLight(st.nextToken().replace("/LIGHT:", ""));
+					vo.setOnOff(st.nextToken().replace("/ONOFF:", ""));
+				
+					sharedObject.send(socket,vo);
+						
 				}
 
-				vo.setTemp1(msg.replaceFirst("/1TEMPRATURE", ""));
-
-				ObjectMapper objectMapper = new ObjectMapper();
-				String jsonData = objectMapper.writeValueAsString(vo);
-				System.out.println("JSON DATA==" + jsonData);
-				printWriter.println(jsonData);
-				printWriter.flush();
-//				objectOutputStream.writeObject(vo);
-//				objectOutputStream.flush();
+				
+				
+//				vo.setTemp(msg.replaceFirst("/TEMPRATURE:", ""));
+//				vo.setLight(msg.replaceFirst("/LIGHT:", ""));
+//				vo.setOnOff(msg.replaceFirst("/ONOFF:", ""));
+				System.out.println(vo.getTemp() + " : " + vo.getLight() + " : " + vo.getOnOff());
+				
+				
+//				ObjectMapper objectMapper = new ObjectMapper();
+//				String jsonData = objectMapper.writeValueAsString(vo);
+//				System.out.println("JSON DATA==" + jsonData);
+//				printWriter.println(jsonData);
+//				printWriter.flush();
 
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+
 		} finally {
 			try {
 				socket.close();
 				objectOutputStream.close();
 				bufferedReader.close();
 				printWriter.close();
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

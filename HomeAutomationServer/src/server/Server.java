@@ -19,7 +19,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import model.TestVO;
 
-public class RxTx extends Application {
+public class Server extends Application {
 	private TextArea ta;
 	private Button btn;
 	private ServerSocket serverSocket;
@@ -69,6 +69,7 @@ public class RxTx extends Application {
 								executorService.execute(runnable);
 
 							}
+							
 						}
 
 					} catch (IOException e) {
@@ -88,7 +89,7 @@ public class RxTx extends Application {
 
 		Scene scene = new Scene(root); // borderPane을 포함하는 장명 생성
 		primaryStage.setScene(scene); // windows의 화면을 scene으로 설정
-		primaryStage.setTitle("프로젝트 - 자바 네트워크 샘플");
+		primaryStage.setTitle("자바 네트워크서버");
 		primaryStage.setOnCloseRequest(e -> {
 			System.exit(0);
 		});
