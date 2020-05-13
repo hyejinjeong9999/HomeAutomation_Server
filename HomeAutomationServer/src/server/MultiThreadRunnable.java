@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 import model.TestVO;
@@ -16,7 +17,7 @@ public class MultiThreadRunnable implements Runnable {
 	PrintWriter printWriter;
 	SharedObject sharedObject;
 	TestVO vo;
-	ObjectOutputStream objectOutputStream;
+
 	StringTokenizer st;
 	String moduleID;
 
@@ -28,76 +29,70 @@ public class MultiThreadRunnable implements Runnable {
 
 	// Construction injection
 	// Constructor - Socket과 공용객체를 답아와 초기화 해준다
+
+	// 안드로이드에 값 전달
 	public MultiThreadRunnable(Socket socket, SharedObject sharedObject, TestVO vo,
 			ObjectOutputStream objectOutputStream) {
 		this.socket = socket;
 		this.sharedObject = sharedObject;
 		this.vo = vo;
-		this.objectOutputStream = objectOutputStream;
+
 		try {
 			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 			this.printWriter = new PrintWriter(socket.getOutputStream());
-			this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void run() {
+	public synchronized void run() {
 		// Client 로부터 넘어온 'MSG' 를 판별하여 기능 실행
 		String msg = "";
 		try {
-			
-			//안드로이드가 먼저 접속할땐 에러 x
-			//안드로이드 list가 null인 상태에서 값을 넣어주면 에러가 뜸
+
+			// 값들을
 			while ((msg = bufferedReader.readLine()) != null) {
-				st = new StringTokenizer(msg, " ");
 
 				System.out.println("test==" + msg);
 
+				if (msg.contains("ANDROID>")) {
+					String order = msg.replace("/ANDROID>", "");
+					sharedObject.sendTOModule(order);
+				}
+
 				if (msg.contains("/ID:")) {
-					System.out.println(msg);
-					//msg = msg.replace("/ID:", "");
-					
-					//ID가 IN 이면
-					if(msg.contains("IN")) {
-						System.out.println("IN");
-						this.moduleID = msg;
-						System.out.println(msg);
+					st = new StringTokenizer(msg, " ");
+
+					// ID가 IN 이면 값 추가
+					if (msg.contains("IN")) {
+						this.moduleID = st.nextToken().replace("/ID:", "");
+						System.out.println(this.moduleID);
 						sharedObject.add(msg, this);
 						continue;
-						
+
 					}
-					//IT가 OUT이면 
+					// ID가 OUT이면 연결 끊기
 					else {
 						sharedObject.disconn(moduleID, MultiThreadRunnable.this);
-
 						continue;
-						
-						
 					}
-				
-					
-					
-				
-				}else{
+					// 라떼판다 전송
+				} else if (msg.contains("TEMPRATURE") || msg.contains("LIGHT") || msg.contains("ONOFF")) {
+					st = new StringTokenizer(msg, " ");
 					vo.setTemp(st.nextToken().replace("/TEMPRATURE:", ""));
 					vo.setLight(st.nextToken().replace("/LIGHT:", ""));
 					vo.setOnOff(st.nextToken().replace("/ONOFF:", ""));
-				
-					sharedObject.send(socket,vo);
-						
+					sharedObject.send(vo);
+
 				}
 
-				
-				
 //				vo.setTemp(msg.replaceFirst("/TEMPRATURE:", ""));
 //				vo.setLight(msg.replaceFirst("/LIGHT:", ""));
 //				vo.setOnOff(msg.replaceFirst("/ONOFF:", ""));
 				System.out.println(vo.getTemp() + " : " + vo.getLight() + " : " + vo.getOnOff());
-				
-				
+
 //				ObjectMapper objectMapper = new ObjectMapper();
 //				String jsonData = objectMapper.writeValueAsString(vo);
 //				System.out.println("JSON DATA==" + jsonData);
@@ -110,16 +105,21 @@ public class MultiThreadRunnable implements Runnable {
 
 		} finally {
 			try {
-				socket.close();
-				objectOutputStream.close();
+				// socket.close();
+
 				bufferedReader.close();
 				printWriter.close();
+//				socket.close();
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 		}
+	}
+
+	public PrintWriter getPrintWriter() {
+		return printWriter;
 	}
 
 }
