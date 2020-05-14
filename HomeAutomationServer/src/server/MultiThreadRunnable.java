@@ -79,19 +79,17 @@ public class MultiThreadRunnable implements Runnable {
 						continue;
 					}
 					// 라떼판다 전송
-				} else if (msg.contains("TEMPRATURE") || msg.contains("LIGHT") || msg.contains("ONOFF")) {
+				} else if (msg.contains("TEMPRATURE") || msg.contains("LIGHT") || msg.contains("ONOFF")||msg.contains("dustDensity")) {
 					st = new StringTokenizer(msg, " ");
 					vo.setTemp(st.nextToken().replace("/TEMPRATURE:", ""));
 					vo.setLight(st.nextToken().replace("/LIGHT:", ""));
 					vo.setOnOff(st.nextToken().replace("/ONOFF:", ""));
+					vo.setDustDensity(st.nextToken().replace("/dustDensity:", ""));
 					sharedObject.send(vo);
 
 				}
 
-//				vo.setTemp(msg.replaceFirst("/TEMPRATURE:", ""));
-//				vo.setLight(msg.replaceFirst("/LIGHT:", ""));
-//				vo.setOnOff(msg.replaceFirst("/ONOFF:", ""));
-				System.out.println(vo.getTemp() + " : " + vo.getLight() + " : " + vo.getOnOff());
+
 
 //				ObjectMapper objectMapper = new ObjectMapper();
 //				String jsonData = objectMapper.writeValueAsString(vo);

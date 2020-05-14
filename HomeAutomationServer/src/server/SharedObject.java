@@ -96,7 +96,7 @@ class SharedObject {
 
 	// json 형태로 바꿔서 안드로이드로 보내는 send 함수
 	public void send(TestVO vo) {
-		System.out.println("send()---------");
+		System.out.println("-----------vo객체 전송 : ---------");
 		if (clientList.size() > 0) {
 			for (MultiThreadRunnable runnable : clientList) {
 				ObjectMapper objectMapper = new ObjectMapper();
