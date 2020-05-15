@@ -9,14 +9,14 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
-import model.TestVO;
+import model.WeatherVO;
 
 public class MultiThreadRunnable implements Runnable {
 	Socket socket;
 	BufferedReader bufferedReader;
 	PrintWriter printWriter;
 	SharedObject sharedObject;
-	TestVO vo;
+	WeatherVO vo;
 
 	StringTokenizer st;
 	String moduleID;
@@ -31,7 +31,7 @@ public class MultiThreadRunnable implements Runnable {
 	// Constructor - Socket과 공용객체를 답아와 초기화 해준다
 
 	// 안드로이드에 값 전달
-	public MultiThreadRunnable(Socket socket, SharedObject sharedObject, TestVO vo,
+	public MultiThreadRunnable(Socket socket, SharedObject sharedObject, WeatherVO vo,
 			ObjectOutputStream objectOutputStream) {
 		this.socket = socket;
 		this.sharedObject = sharedObject;

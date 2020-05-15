@@ -17,7 +17,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
-import model.TestVO;
+import model.WeatherVO;
 
 public class Server extends Application {
 	private TextArea ta;
@@ -27,7 +27,7 @@ public class Server extends Application {
 	private BufferedReader bufferedReader;
 	MultiThreadRunnable runnable;
 	SharedObject sharedObject = new SharedObject();
-	TestVO vo = new TestVO();
+	WeatherVO vo = new WeatherVO();
 	ObjectOutputStream objectOutputStream;
 	Object obj = new Object();
 

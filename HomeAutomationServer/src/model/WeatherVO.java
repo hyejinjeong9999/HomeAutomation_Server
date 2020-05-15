@@ -2,7 +2,7 @@ package model;
 
 import java.io.Serializable;
 
-public class TestVO implements Serializable {
+public class WeatherVO implements Serializable {
 	String temp;
 	String light;
 	String onOff;

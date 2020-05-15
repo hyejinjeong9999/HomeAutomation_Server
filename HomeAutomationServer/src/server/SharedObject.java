@@ -6,7 +6,7 @@ import java.util.StringTokenizer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import model.TestVO;
+import model.WeatherVO;
 
 /// ------------공유객체
 class SharedObject {
@@ -95,7 +95,7 @@ class SharedObject {
 	}
 
 	// json 형태로 바꿔서 안드로이드로 보내는 send 함수
-	public void send(TestVO vo) {
+	public void send(WeatherVO vo) {
 		System.out.println("-----------vo객체 전송 : ---------");
 		if (clientList.size() > 0) {
 			for (MultiThreadRunnable runnable : clientList) {
