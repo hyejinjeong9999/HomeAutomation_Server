@@ -64,8 +64,6 @@ public class HomeController {
 		out.flush();
 		out.close();
 
-		
-
 	}
 
 }

@@ -75,7 +75,7 @@ public class MultiThreadRunnable implements Runnable {
 					}
 					// ID가 OUT이면 연결 끊기
 					else {
-						sharedObject.disconn(moduleID, MultiThreadRunnable.this);
+						sharedObject.disconn(moduleID, this);
 						continue;
 					}
 					// 라떼판다 전송

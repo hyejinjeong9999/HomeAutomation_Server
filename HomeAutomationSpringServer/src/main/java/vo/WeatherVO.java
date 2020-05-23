@@ -8,6 +8,52 @@ public class WeatherVO {
 	String tempMax; // main - temp_max
 	String humidity; // main - humidity
 	String name; // name, 지역명
+	String pm10Value;
+	String pm10Value24;
+	String pm25Value;
+	String pm25Value24;
+	
+	
+	
+
+	public String getPm10Value() {
+		return pm10Value;
+	}
+
+	@Override
+	public String toString() {
+		return "WeatherVO [weather=" + weather + ", temp=" + temp + ", feelsLike=" + feelsLike + ", tempMin=" + tempMin
+				+ ", tempMax=" + tempMax + ", humidity=" + humidity + ", name=" + name + ", pm10Value=" + pm10Value
+				+ ", pm10Value24=" + pm10Value24 + ", pm25Value=" + pm25Value + ", pm25Value24=" + pm25Value24 + "]";
+	}
+
+	public void setPm10Value(String pm10Value) {
+		this.pm10Value = pm10Value;
+	}
+
+	public String getPm10Value24() {
+		return pm10Value24;
+	}
+
+	public void setPm10Value24(String pm10Value24) {
+		this.pm10Value24 = pm10Value24;
+	}
+
+	public String getPm25Value() {
+		return pm25Value;
+	}
+
+	public void setPm25Value(String pm25Value) {
+		this.pm25Value = pm25Value;
+	}
+
+	public String getPm25Value24() {
+		return pm25Value24;
+	}
+
+	public void setPm25Value24(String pm25Value24) {
+		this.pm25Value24 = pm25Value24;
+	}
 
 	public String getName() {
 		return name;

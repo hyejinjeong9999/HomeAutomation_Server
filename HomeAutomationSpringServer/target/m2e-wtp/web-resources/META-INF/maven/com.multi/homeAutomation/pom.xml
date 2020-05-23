@@ -117,6 +117,14 @@
 			<version>4.7</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- To convert XML File in to JSON -->
+		<dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>
+
 
 		<!-- Jackson -->
 		<dependency>
