@@ -9,14 +9,14 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
-import model.WeatherVO;
+import model.SensorDataVO;
 
 public class MultiThreadRunnable implements Runnable {
 	Socket socket;
 	BufferedReader bufferedReader;
 	PrintWriter printWriter;
 	SharedObject sharedObject;
-	WeatherVO vo;
+	SensorDataVO sensorDataVO;
 
 	StringTokenizer st;
 	String moduleID;
@@ -31,11 +31,11 @@ public class MultiThreadRunnable implements Runnable {
 	// Constructor - Socket과 공용객체를 답아와 초기화 해준다
 
 	// 안드로이드에 값 전달
-	public MultiThreadRunnable(Socket socket, SharedObject sharedObject, WeatherVO vo,
+	public MultiThreadRunnable(Socket socket, SharedObject sharedObject, SensorDataVO vo,
 			ObjectOutputStream objectOutputStream) {
 		this.socket = socket;
 		this.sharedObject = sharedObject;
-		this.vo = vo;
+		this.sensorDataVO = vo;
 
 		try {
 			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
@@ -59,7 +59,27 @@ public class MultiThreadRunnable implements Runnable {
 
 				if (msg.contains("ANDROID>")) {
 					String order = msg.replace("/ANDROID>", "");
-					sharedObject.sendTOModule(order);
+					/// ANDROID>/MODE SMART -> /MODE SMART
+					if (msg.contains("/MODE")) {
+
+						// mode 뒤에 값을 알아낸담에 vo - mode 저장, 각 모드별로 알고리즘처리
+
+						if (msg.contains("SMART")) {
+							// smart 모드
+							sensorDataVO.setMode("SMART");
+						} else if (msg.contains("MENUAL")) {
+							// 수동모드
+							sensorDataVO.setMode("MENUAL");
+						} else if (msg.contains("VENTILATION")) {
+							// 공기청정기 모드
+							sensorDataVO.setMode("VENTILATION");
+						}
+
+					}
+
+					// 센서에게 값 전송
+					else
+						sharedObject.sendTOModule(order);
 				}
 
 				if (msg.contains("/ID:")) {
@@ -72,30 +92,21 @@ public class MultiThreadRunnable implements Runnable {
 						sharedObject.add(msg, this);
 						continue;
 
-					}
-					// ID가 OUT이면 연결 끊기
-					else {
+					} else {
+						// ID가 OUT이면 연결 끊기
 						sharedObject.disconn(moduleID, this);
 						continue;
 					}
 					// 라떼판다 전송
-				} else if (msg.contains("TEMPRATURE") || msg.contains("LIGHT") || msg.contains("ONOFF")||msg.contains("dustDensity")) {
+				} else if (msg.contains("TEMPRATURE") || msg.contains("LIGHT") || msg.contains("ONOFF")
+						|| msg.contains("dustDensity")) {
 					st = new StringTokenizer(msg, " ");
-					vo.setTemp(st.nextToken().replace("/TEMPRATURE:", ""));
-					vo.setLight(st.nextToken().replace("/LIGHT:", ""));
-					vo.setOnOff(st.nextToken().replace("/ONOFF:", ""));
-					vo.setDustDensity(st.nextToken().replace("/dustDensity:", ""));
-					sharedObject.send(vo);
+					sensorDataVO.setTemp(st.nextToken().replace("/TEMPRATURE:", ""));
+					sensorDataVO.setWindowStatus(st.nextToken().replace("/ONOFF:", ""));
+					sensorDataVO.setDustDensity(st.nextToken().replace("/dustDensity:", ""));
+					sharedObject.send(sensorDataVO);
 
 				}
-
-
-
-//				ObjectMapper objectMapper = new ObjectMapper();
-//				String jsonData = objectMapper.writeValueAsString(vo);
-//				System.out.println("JSON DATA==" + jsonData);
-//				printWriter.println(jsonData);
-//				printWriter.flush();
 
 			}
 		} catch (IOException e) {
@@ -103,11 +114,9 @@ public class MultiThreadRunnable implements Runnable {
 
 		} finally {
 			try {
-				// socket.close();
-
 				bufferedReader.close();
 				printWriter.close();
-//				socket.close();
+				socket.close();
 
 			} catch (IOException e) {
 				e.printStackTrace();
