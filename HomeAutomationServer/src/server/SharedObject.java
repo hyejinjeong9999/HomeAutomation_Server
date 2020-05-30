@@ -1,7 +1,10 @@
 package server;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
+import org.apache.commons.codec.binary.Base64;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,29 +16,51 @@ class SharedObject {
 	String TAG = "SharedObject";
 
 	ArrayList<MultiThreadRunnable> clientList = new ArrayList<>(); // 안드로이드 저장
+	ArrayList<MultiThreadRunnable> matlabList = new ArrayList<>();
 	ArrayList<MultiThreadRunnable> moduleList = new ArrayList<>(); // 모듈들 저장
 
 	// 들어올때
-	public void add(String msg, MultiThreadRunnable list) {
+	public void addClients(String msg, MultiThreadRunnable list) {
 		if (msg.contains("ANDROID")) {
 			// 안드로이드로 접속하면 안드로이드list에 저장
 			clientList.add(list);
-			System.out.println(clientList.get(0));
-
-		}
-
-		else {
+			System.out.println("client접속 : " + clientList.get(0));
+		} else if (msg.contains("MATLAB")) {
+			matlabList.add(list);
+			System.out.println("matlab 저장");
+			System.out.println(matlabList.get(0).getModuleID());
+//			matlabList
+		} else {
 			// 모듈로 접속시 모듈list에 저장
 			moduleList.add(list);
-			System.out.println(moduleList.get(0));
+			System.out.println("모듈 접속 : " + moduleList.get(0));
 		}
 	}
 
 	// 접속종료 : clientList의 해당 runnable 삭제
-	public void disconn(String moduleID, MultiThreadRunnable runnable) {
+	public void removeClients(String moduleID, MultiThreadRunnable runnable) {
 
 		clientList.remove(runnable);
 
+	}
+
+	public void saveImage(String ImageData) {
+		System.out.println("ImaeData 값" + ImageData);
+
+		byte getByte[] = Base64.decodeBase64(ImageData);
+
+		try {
+
+			FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\student\\Desktop\\images\\test.jpg");
+			fileOutputStream.write(getByte);
+			fileOutputStream.close();
+			System.out.println("image 저장 완료");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("File_Exception==" + e);
+
+		}
 	}
 
 	public void sendTOModule(String order) {
@@ -47,9 +72,7 @@ class SharedObject {
 		System.out.println("sednToModuleTest --->" + value + " : " + keyword);
 		System.out.println(moduleList.size());
 		if (moduleList.size() > 0) {
-
 			for (MultiThreadRunnable runnable : moduleList) {
-
 				if (runnable.getModuleID().equals(keyword)) {
 					System.out.println("sednToModuleTest ---> if문 통과 ");
 					System.out.println("sednToModuleTest ---> runnable get ModuleID" + runnable.getModuleID());
@@ -58,13 +81,13 @@ class SharedObject {
 				} else
 					System.out.println("sednToModuleTest ---> 전송못함");
 			}
-
 		}
-
 	}
 
+
+
 	// json 형태로 바꿔서 안드로이드로 보내는 send 함수
-	public void send(SensorDataVO sensorDataVO) {
+	public void sendJsonDataToAndroid(SensorDataVO sensorDataVO) {
 		System.out.println("-----------vo객체 전송 : ---------");
 		if (clientList.size() > 0) {
 			for (MultiThreadRunnable runnable : clientList) {

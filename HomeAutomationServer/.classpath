@@ -13,5 +13,11 @@
 	<classpathentry kind="lib" path="Jackson/jackson-annotations-2.8.1.jar"/>
 	<classpathentry kind="lib" path="Jackson/jackson-core-2.8.1.jar"/>
 	<classpathentry kind="lib" path="Jackson/jackson-databind-2.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/json-20140107.jar"/>
+	<classpathentry kind="lib" path="lib/json-simple-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

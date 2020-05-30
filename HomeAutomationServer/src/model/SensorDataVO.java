@@ -4,12 +4,25 @@ import java.io.Serializable;
 
 public class SensorDataVO implements Serializable {
 
-	String temp; // 실내 모드
 	String mode; // 모드
+	String temp; // 실내 모드
 	String windowStatus; // 창문 onoff
 	String dustDensity; // 실내 미세먼지
 	String airpurifierStatus; // 공기청정기 onoff
 	String airconditionerStatus; // 에어컨 onoff
+	String lightStatus; //전등
+	
+	
+	
+	public String getLightStatus() {
+		return lightStatus;
+	}
+
+	public void setLightStatus(String lightStatus) {
+		this.lightStatus = lightStatus;
+	}
+
+	
 
 	public String getTemp() {
 		return temp;

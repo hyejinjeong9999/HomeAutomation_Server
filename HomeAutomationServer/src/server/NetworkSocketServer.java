@@ -19,7 +19,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import model.SensorDataVO;
 
-public class Server extends Application {
+public class NetworkSocketServer extends Application {
 	private TextArea ta;
 	private Button btn;
 	private ServerSocket serverSocket;
@@ -30,6 +30,7 @@ public class Server extends Application {
 	SensorDataVO vo = new SensorDataVO();
 	ObjectOutputStream objectOutputStream;
 	Object obj = new Object();
+	String ml = "MATLAB"; 
 
 	// private BufferedWriter socketBW;
 
@@ -54,27 +55,31 @@ public class Server extends Application {
 		btn.setPrefSize(250, 50);
 		btn.setOnAction(e -> {
 			Runnable r = new Runnable() {
+				
 				public void run() {
-
 					try {
 						serverSocket = new ServerSocket(1357);
 						printMSG("연결성공");
-
 						while (true) {
 							synchronized (obj) {
-
 								socket = serverSocket.accept();
-								runnable = new MultiThreadRunnable(socket, sharedObject, vo, objectOutputStream);
-
+								printMSG(socket.getInetAddress().toString());
+								
+								//matlab일 경우 
+								if(socket.getInetAddress().toString().equals("/70.12.60.91")) {
+									System.out.println("matlap runnable");
+									runnable = new MultiThreadRunnable(socket, sharedObject, vo, objectOutputStream, ml);
+								//아닌 경우
+								}else {
+									runnable = new MultiThreadRunnable(socket, sharedObject, vo, objectOutputStream);
+								}
 								executorService.execute(runnable);
-
 							}
-							
 						}
-
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						System.out.println("IOException=="+e);
 					}
 				}
 			};
