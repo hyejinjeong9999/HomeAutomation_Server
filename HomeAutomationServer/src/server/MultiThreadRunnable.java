@@ -21,6 +21,10 @@ public class MultiThreadRunnable implements Runnable {
 	String moduleID;
 	WeatherVO weatherVO;
 	int temperature = 25;
+	long startTime;
+	long endTime;
+	String order;
+	boolean testStatus = false;
 
 	// client, module list 생성
 
@@ -78,73 +82,119 @@ public class MultiThreadRunnable implements Runnable {
 			while ((msg = bufferedReader.readLine()) != null) {
 				// System.out.println("test==" + msg);
 				if (msg.contains("ANDROID>")) {
-					String order = msg.replace("/ANDROID>", "");
+					order = msg.replace("/ANDROID>", "");
 					/// ANDROID>/MODE SMART -> /MODE SMART
 					if (msg.contains("/MODE")) {
 						// mode 뒤에 값을 알아낸담에 vo - mode 저장, 각 모드별로 알고리즘처리
+
+						////////////////////
+						// smart모드 모드일때
 						if (msg.contains("SMART")) {
-							// smart 모드
 							System.out.println("SMART모드 시작");
 							sensorDataVO.setMode("ON");
-							//온도가 높으면 에어컨 //실내 대기질 나쁨 -> 날씨, 실외대기질, window
-							weatherVO = new WeatherVO();
-							weatherVO.getWeather();
-							//공기청정기 ON --> 기본으로 항상 켜져 있음
-							order = "AIRPURIFIER ON";
-							sharedObject.sendTOModule(order);
-							
-							//
-							if(temperature >25) {
-								order = "AIRCONDITIONER ON";							
-								sharedObject.sendTOModule(order);
-							}
-							
-							//대기질 안좋을때
-							if(Integer.parseInt(sensorDataVO.getDustDensity())<20)
-							
-							
-							
-							if(weatherVO.getWeather().equals("Sunny")) {}
-							
-							
-						
+
+							// smart 모드
+							// 온도가 높으면 에어컨 //실내 대기질 나쁨 -> 날씨, 실외대기질, window
 						} else if (msg.contains("SLEEP")) {
 							// 수면모드
 							System.out.println("SLEEP모드 시작");
-							
-							order = "LIGHT OFF";							
+
+							order = "LIGHT OFF";
 							sharedObject.sendTOModule(order);
-							
+
 							sensorDataVO.setMode("OFF");
+
 						} else if (msg.contains("VENTILATION")) {
 							// 환기모드
 							System.out.println("VENTILATION모드 시작");
 							sensorDataVO.setMode("OFF");
-							
+
 							order = "WINDOW OPEN";
 							sharedObject.sendTOModule(order);
-							
+
 							order = "AIRPURIFIER OFF";
 							sharedObject.sendTOModule(order);
-							
+
 							order = "AIRCONDITIONER OFF";
 							sharedObject.sendTOModule(order);
-							
+
 						} else if (msg.contains("OUTING")) {
 							// 외출
 							System.out.println("OUTING모드 시작");
 							sensorDataVO.setMode("OFF");
-							
+
 							order = "AIRCONDITIONER OFF";
 							sharedObject.sendTOModule(order);
-							
-							order = "LIGHT OFF";	
+
+							order = "LIGHT OFF";
 							sharedObject.sendTOModule(order);
 						}
+
+						sharedObject.sendJsonDataToAndroid(sensorDataVO);
 					}
 					// 센서에게 값 전송
-					else
+					else {
+						if (!(order.equals("REFRESH"))) {
+							sharedObject.sendTOModule(order);
+						}
+						sharedObject.sendJsonDataToAndroid(sensorDataVO);
+					}
+				}
+
+				// 스마트모드일 경우
+				if (sensorDataVO.getMode().equals("ON")) {
+					weatherVO = new WeatherVO();
+					weatherVO.getWeather();
+
+					// 공기청정기 ON --> 기본으로 항상 켜져 있음
+					if (!(sensorDataVO.getWindowStatus().equals("ON"))) {
+						order = "AIRPURIFIER ON";
 						sharedObject.sendTOModule(order);
+					}
+
+					// 온도가 높으면 에어컨 키기
+					if (Integer.parseInt(weatherVO.getTemp()) > temperature) {
+						order = "AIRCONDITIONER ON";
+						sharedObject.sendTOModule(order);
+					}
+
+					// 실내대기질 안좋을때
+					if (Integer.parseInt(sensorDataVO.getDust10()) > 35) {
+						// 바깥날씨 비, 눈, 안개 미세먼지 81이상 이 아닐때 창문열기 : 81기준 : 미세먼지 나쁨~매우나쁨
+
+						if (!(testStatus)) { // false 일때 ->
+
+							if (!((weatherVO.getWeather().equals("Rain") || weatherVO.getWeather().equals("Snow")
+									|| weatherVO.getWeather().equals("Drizzle"))
+									&& Integer.parseInt(weatherVO.getPm10Value()) > 81)) {
+
+								order = "WINDOW ON";
+								sharedObject.sendTOModule(order);
+
+								order = "AIRPURIFIER OFF";
+								sharedObject.sendTOModule(order);
+
+								testStatus = true;
+								startTime = System.currentTimeMillis();
+
+							}
+						} else {
+							endTime = System.currentTimeMillis();
+
+							if ((startTime - endTime) / 1000 == 600) {
+
+								order = "WINDOW CLOSE";
+								sharedObject.sendTOModule(order);
+
+								testStatus = false;
+
+							}
+
+						}
+
+					}
+					sharedObject.sendJsonDataToAndroid(sensorDataVO);
+
 				}
 
 				if (msg.contains("/ID:")) {
@@ -155,6 +205,7 @@ public class MultiThreadRunnable implements Runnable {
 						this.moduleID = st.nextToken().replace("/ID:", "");
 						System.out.println(this.moduleID);
 						sharedObject.addClients(this.moduleID, this);
+						sharedObject.sendJsonDataToAndroid(sensorDataVO);
 						continue;
 
 					} else {
@@ -163,28 +214,54 @@ public class MultiThreadRunnable implements Runnable {
 						continue;
 					}
 					// 라떼판다 값 받아오기 -> 10초에 한번씩 받아옴
-				} else if (msg.contains("TEMPRATURE") || msg.contains("WINDOWSTATUS") || msg.contains("DUSTDENSITY")
-						|| msg.contains("AIRPURIFIERSTATUS") || msg.contains("AIRCONDITIONERSTATUS") || msg.contains("LIGHT")) {
-					st = new StringTokenizer(msg, " ");
-					sensorDataVO.setTemp(st.nextToken().replace("/TEMPRATURE:", ""));
-					sensorDataVO.setLightStatus(st.nextToken().replace("/LIGHT:", ""));
-					sensorDataVO.setWindowStatus(st.nextToken().replace("/WINDOWSTATUS:", ""));
-					sensorDataVO.setDustDensity(st.nextToken().replace("/DUSTDENSITY:", ""));
-//					sensorDataVO.setAirpurifierStatus(st.nextToken().replace("/AIRPURIFIERSTATUS:", ""));
-//					sensorDataVO.setAirconditionerStatus(st.nextToken().replace("/AIRCONDITIONERSTATUS:", ""));
-					sharedObject.sendJsonDataToAndroid(sensorDataVO);
+//				} else if (msg.contains("TEMPRATURE") || msg.contains("WINDOWSTATUS") || msg.contains("DUSTDENSITY")
+//						|| msg.contains("AIRPURIFIERSTATUS") || msg.contains("AIRCONDITIONERSTATUS")
+//						|| msg.contains("LIGHT")) {
+//					st = new StringTokenizer(msg, " ");
+//					sensorDataVO.setTemp(st.nextToken().replace("/TEMPRATURE:", ""));
+//					sensorDataVO.setLightStatus(st.nextToken().replace("/LIGHT:", ""));
+//					sensorDataVO.setWindowStatus(st.nextToken().replace("/WINDOWSTATUS:", ""));
+////					sensorDataVO.setDustDensity(st.nextToken().replace("/DUSTDENSITY:", ""));
+////					sensorDataVO.setAirpurifierStatus(st.nextToken().replace("/AIRPURIFIERSTATUS:", ""));
+////					sensorDataVO.setAirconditionerStatus(st.nextToken().replace("/AIRCONDITIONERSTATUS:", ""));
+//					sharedObject.sendJsonDataToAndroid(sensorDataVO);
 
+					// 미세먼지
+				} else if (msg.startsWith("/AP")) {
+					st = new StringTokenizer(msg, " ");
+					st.nextToken();
+					sensorDataVO.setAirpurifierStatus(st.nextToken().replace("/APONOFF:", ""));
+					sensorDataVO.setDust25(st.nextToken().replace("/DUST2.5:", ""));
+					sensorDataVO.setDust10(st.nextToken().replace("/DUST10:", ""));
+					sensorDataVO.setGasStatus(st.nextToken().replace("/GASSTATUS:", ""));
+
+					// 에어컨
+				} else if (msg.startsWith("/AC")) {
+					st = new StringTokenizer(msg, " ");
+					st.nextToken();
+					sensorDataVO.setAirconditionerStatus(st.nextToken().replace("/ACONOFF:", ""));
+					sensorDataVO.setTemp(st.nextToken().replace("/TEMPERATURE:", ""));
+
+					// 창문
+				} else if (msg.startsWith("/WD")) {
+					st = new StringTokenizer(msg, " ");
+					st.nextToken();
+					sensorDataVO.setWindowStatus(st.nextToken().replace("/WDONOFF:", ""));
 				}
 
 				// 카메라 이미지 저장
 				else if (msg.contains("CAMERA")) {
+
 					String order = msg.replace("/CAMERA>IMAGE ", "");
 					sharedObject.saveImage(order);
 
 				}
 
+				System.out.println(sensorDataVO.toString());
 			}
-		} catch (IOException e) {
+		} catch (
+
+		IOException e) {
 			e.printStackTrace();
 
 		} finally {

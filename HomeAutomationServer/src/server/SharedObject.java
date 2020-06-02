@@ -25,6 +25,9 @@ class SharedObject {
 			// 안드로이드로 접속하면 안드로이드list에 저장
 			clientList.add(list);
 			System.out.println("client접속 : " + clientList.get(0));
+			
+			
+			
 		} else if (msg.contains("MATLAB")) {
 			matlabList.add(list);
 			System.out.println("matlab 저장");
@@ -78,6 +81,7 @@ class SharedObject {
 					System.out.println("sednToModuleTest ---> runnable get ModuleID" + runnable.getModuleID());
 					runnable.getPrintWriter().println(value);
 					runnable.getPrintWriter().flush();
+					
 				} else
 					System.out.println("sednToModuleTest ---> 전송못함");
 			}

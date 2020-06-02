@@ -4,16 +4,40 @@ import java.io.Serializable;
 
 public class SensorDataVO implements Serializable {
 
-	String mode; // 모드
-	String temp; // 실내 모드
-	String windowStatus; // 창문 onoff
-	String dustDensity; // 실내 미세먼지
-	String airpurifierStatus; // 공기청정기 onoff
-	String airconditionerStatus; // 에어컨 onoff
-	String lightStatus; //전등
-	
-	
-	
+	String mode="OFF"; // 모드
+	String temp = "0"; // 실내 온도
+	String dust25 = "0";
+	String dust10 = "0";
+	String gasStatus = "0";
+	String windowStatus = "0"; // 창문 onoff
+	String airpurifierStatus = "0"; // 공기청정기 onoff
+	String airconditionerStatus = "0"; // 에어컨 onoff
+	String lightStatus = "0"; //전등
+
+	public String getDust25() {
+		return dust25;
+	}
+
+	public void setDust25(String dust25) {
+		this.dust25 = dust25;
+	}
+
+	public String getDust10() {
+		return dust10;
+	}
+
+	public void setDust10(String dust10) {
+		this.dust10 = dust10;
+	}
+
+	public String getGasStatus() {
+		return gasStatus;
+	}
+
+	public void setGasStatus(String gasStatus) {
+		this.gasStatus = gasStatus;
+	}
+
 	public String getLightStatus() {
 		return lightStatus;
 	}
@@ -48,13 +72,6 @@ public class SensorDataVO implements Serializable {
 		this.windowStatus = windowStatus;
 	}
 
-	public String getDustDensity() {
-		return dustDensity;
-	}
-
-	public void setDustDensity(String dustDensity) {
-		this.dustDensity = dustDensity;
-	}
 
 	public String getAirpurifierStatus() {
 		return airpurifierStatus;
@@ -71,5 +88,15 @@ public class SensorDataVO implements Serializable {
 	public void setAirconditionerStatus(String airconditionerStatus) {
 		this.airconditionerStatus = airconditionerStatus;
 	}
+
+	@Override
+	public String toString() {
+		return "SensorDataVO [mode=" + mode + ", temp=" + temp + ", dust25=" + dust25 + ", dust10=" + dust10
+				+ ", gasStatus=" + gasStatus + ", windowStatus=" + windowStatus + ", airpurifierStatus="
+				+ airpurifierStatus + ", airconditionerStatus=" + airconditionerStatus + ", lightStatus=" + lightStatus
+				+ "]";
+	}
+	
+	
 
 }

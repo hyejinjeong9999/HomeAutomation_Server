@@ -31,6 +31,7 @@ public class NetworkSocketServer extends Application {
 	ObjectOutputStream objectOutputStream;
 	Object obj = new Object();
 	String ml = "MATLAB"; 
+	
 
 	// private BufferedWriter socketBW;
 

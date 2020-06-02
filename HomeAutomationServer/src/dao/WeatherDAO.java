@@ -14,7 +14,7 @@ public class WeatherDAO {
 	
 		public ArrayList<WeatherVO> getWeather(WeatherVO vo) {
 
-			String urlstr = "http://192.168.27.1:8088/homeAutomation/getWeather";
+			String urlstr = "http://192.168.27.1:8090/homeAutomation/getWeather";
 
 			try {
 				URL url = new URL(urlstr);
