@@ -12,9 +12,10 @@ import model.WeatherVO;
 
 public class WeatherDAO {
 	
-		public ArrayList<WeatherVO> getWeather(WeatherVO vo) {
+		public void getWeather(WeatherVO vo) {
+			System.out.println("JAVA SERVER - DAO getWeather 실행");
 
-			String urlstr = "http://192.168.27.1:8090/homeAutomation/getWeather";
+			String urlstr = "http://70.12.60.98:8090/homeAutomation/getWeather";
 
 			try {
 				URL url = new URL(urlstr);
@@ -38,17 +39,22 @@ public class WeatherDAO {
 				// 지역 저장
 				String name = (String) jsonObj.get("name");
 				vo.setName(name);
+				System.out.println("Name : "+vo.getName());
 				
 				//최고온도
 				String tempMax = (String) jsonObj.get("tempMax");
 				vo.setName(tempMax);
+				System.out.println("tempMax : "+vo.getTempMax());
 
 				//습도
 				String humidity = (String) jsonObj.get("humidity");
 				vo.setName(humidity);
+				System.out.println("humidity : "+vo.getHumidity());
+				
 				//현재온도
 				String temp = (String) jsonObj.get("temp");
 				vo.setName(temp);
+				System.out.println("temp : "+vo.getTemp());
 				
 				//체감온도
 				String feelsLike = (String) jsonObj.get("feelsLike");
@@ -74,10 +80,10 @@ public class WeatherDAO {
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-			//doa 값 LIST에 저장
-			ArrayList<WeatherVO> result = new ArrayList<WeatherVO>();
-			result.add(vo);
-			return result;
+//			//doa 값 LIST에 저장
+//			ArrayList<WeatherVO> result = new ArrayList<WeatherVO>();
+//			result.add(vo);
+//			return result;
 
 		}
 	}

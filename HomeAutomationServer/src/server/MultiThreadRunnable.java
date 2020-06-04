@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
+import dao.WeatherDAO;
 import model.SensorDataVO;
 import model.WeatherVO;
 
@@ -19,12 +20,15 @@ public class MultiThreadRunnable implements Runnable {
 	SensorDataVO sensorDataVO;
 	StringTokenizer st;
 	String moduleID;
-	WeatherVO weatherVO;
+	WeatherVO weatherVO = new WeatherVO();
+	WeatherDAO weatherDAO = new WeatherDAO();
 	int temperature = 25;
 	long startTime;
 	long endTime;
 	String order;
 	boolean testStatus = false;
+	
+	
 
 	// client, module list 생성
 
@@ -75,6 +79,7 @@ public class MultiThreadRunnable implements Runnable {
 			System.out.println("matlap runnable");
 			sharedObject.addClients(moduleID, MultiThreadRunnable.this);
 		}
+		weatherDAO.getWeather(weatherVO);
 
 		String msg = "";
 		try {
@@ -129,8 +134,8 @@ public class MultiThreadRunnable implements Runnable {
 							order = "LIGHT OFF";
 							sharedObject.sendTOModule(order);
 						}
-
-						sharedObject.sendJsonDataToAndroid(sensorDataVO);
+							sharedObject.sendJsonDataToAndroid(sensorDataVO);
+							// TODO Auto-generated catch block
 					}
 					// 센서에게 값 전송
 					else {
@@ -143,8 +148,10 @@ public class MultiThreadRunnable implements Runnable {
 
 				// 스마트모드일 경우
 				if (sensorDataVO.getMode().equals("ON")) {
-					weatherVO = new WeatherVO();
-					weatherVO.getWeather();
+					
+
+					
+					System.out.println("weatherVO test"+ weatherVO.getFeelsLike());
 
 					// 공기청정기 ON --> 기본으로 항상 켜져 있음
 					if (!(sensorDataVO.getWindowStatus().equals("ON"))) {
@@ -153,6 +160,7 @@ public class MultiThreadRunnable implements Runnable {
 					}
 
 					// 온도가 높으면 에어컨 키기
+					System.out.println("weatherVO.getTemp()==================" + weatherVO.getTemp());
 					if (Integer.parseInt(weatherVO.getTemp()) > temperature) {
 						order = "AIRCONDITIONER ON";
 						sharedObject.sendTOModule(order);
@@ -229,11 +237,13 @@ public class MultiThreadRunnable implements Runnable {
 					// 미세먼지
 				} else if (msg.startsWith("/AP")) {
 					st = new StringTokenizer(msg, " ");
+					System.out.println(st.toString());
 					st.nextToken();
 					sensorDataVO.setAirpurifierStatus(st.nextToken().replace("/APONOFF:", ""));
 					sensorDataVO.setDust25(st.nextToken().replace("/DUST2.5:", ""));
 					sensorDataVO.setDust10(st.nextToken().replace("/DUST10:", ""));
 					sensorDataVO.setGasStatus(st.nextToken().replace("/GASSTATUS:", ""));
+					
 
 					// 에어컨
 				} else if (msg.startsWith("/AC")) {
@@ -241,6 +251,10 @@ public class MultiThreadRunnable implements Runnable {
 					st.nextToken();
 					sensorDataVO.setAirconditionerStatus(st.nextToken().replace("/ACONOFF:", ""));
 					sensorDataVO.setTemp(st.nextToken().replace("/TEMPERATURE:", ""));
+					sensorDataVO.setAirconditionerTemp(st.nextToken().replace("",""));
+					sensorDataVO.setAirconditionerMode(st.nextToken().replace("",""));
+					sensorDataVO.setAirconditionerSpeed(st.nextToken().replace("",""));
+					
 
 					// 창문
 				} else if (msg.startsWith("/WD")) {
@@ -256,7 +270,7 @@ public class MultiThreadRunnable implements Runnable {
 					sharedObject.saveImage(order);
 
 				}
-
+				sharedObject.sendJsonDataToAndroid(sensorDataVO);
 				System.out.println(sensorDataVO.toString());
 			}
 		} catch (

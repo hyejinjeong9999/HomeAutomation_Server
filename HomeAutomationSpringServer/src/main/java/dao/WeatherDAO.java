@@ -14,6 +14,7 @@ import vo.WeatherVO;
 public class WeatherDAO {
 
 	public ArrayList<WeatherVO> getWeather(WeatherVO vo) {
+		
 
 		String urlstr = "http://api.openweathermap.org/data/2.5/weather?q=seoul,kangnam,82&appid=503ca03400fee816b458e72090533724";
 
