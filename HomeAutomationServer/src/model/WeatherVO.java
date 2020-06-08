@@ -1,17 +1,17 @@
 package model;
 
 public class WeatherVO {
-	String weather; // weather - main
-	String temp; // main - temp
-	String feelsLike; // main - feels_like
-	String tempMin; // main - temp_min
-	String tempMax; // main - temp_max
-	String humidity; // main - humidity
-	String name; // name, 지역명
-	String pm10Value;
-	String pm10Value24;
-	String pm25Value;
-	String pm25Value24;
+	String weather = ""; // weather - main
+	String temp= ""; // main - temp
+	String feelsLike = ""; // main - feels_like
+	String tempMin = ""; // main - temp_min
+	String tempMax = ""; // main - temp_max
+	String humidity = ""; // main - humidity
+	String name = ""; // name, 지역명
+	String pm10Value = "";
+	String pm10Value24 = "";
+	String pm25Value = "";
+	String pm25Value24 = "";
 	
 	
 	

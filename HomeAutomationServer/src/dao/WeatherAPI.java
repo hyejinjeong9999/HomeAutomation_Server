@@ -85,10 +85,7 @@ public class WeatherAPI implements Runnable{
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-//		//doa 값 LIST에 저장
-//		ArrayList<WeatherVO> result = new ArrayList<WeatherVO>();
-//		result.add(vo);
-//		return result;
+
 	}
 
 }

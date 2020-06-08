@@ -14,8 +14,7 @@ public class SensorDataVO implements Serializable {
 	String airconditionerStatus = "0"; // 에어컨 onoff
 	String airconditionerMode = "COLD"; //운전모드
 	String airconditionerTemp = "0"; //희망온도
-	String airconditionerSpeed = "SPEED1"; //풍속 강풍 / 중풍 / 약풍
-	
+	String airconditionerSpeed = "1"; //풍속 강풍 / 중풍 / 약풍
 	String lightStatus = "0"; //전등
 
 	
