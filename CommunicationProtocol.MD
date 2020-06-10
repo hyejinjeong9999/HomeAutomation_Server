@@ -5,9 +5,9 @@
 ### Socket Connection
 
 * Socket Connection
-  * /ID:ANDROID IN
+  * /ID:ANDROIDtest@kim.com IN
 * Socket disconnection
-  * /ID:ANDROID OUT
+  * /ID:ANDROIDtest@kim.com OUT
 
 ### Data
 
@@ -20,9 +20,6 @@
 * Airconditioner
   * /ANDROID>/AIRCONDITIONER ON
   * /ANDROID>/AIRCONDITIONER OFF
-
-* Refresh
-  * /ANDROID>/REFRESH
 
 ## Server => Android
 
@@ -38,21 +35,27 @@
 ### Sensor Data
 
 #### Air Purifier (AP)
-* /AP
-* /APONOFF: (1 : on, 0 : off)
-* /DUST2.5:
-* /DUST10:
-* /GASSTATUS: (ppm)
-* ex) /AP /APONOFF:1 /DUST2.5:4 /DUST10:10 /GASSTATUS:554
+* /ID:AIRPURIFIER IN
+* /AIRPURIFIER
+* /airpurifierStatus : (1 : on, 0 : off)
+* /dust25 :
+* /dust10 :
+* /gasStatus : (ppm)
+* ex) /AIRPURIFIER /airpurifierStatus:1 /dust25:4 /dust10:10 /gasStatus:554
 #### Air Conditioner(AC)
-* /AC
-* /ACONOFF: (1 : on, 0 : off)
-* /TEMPERATURE:
-ex) /AC /ACONOFF:1 /TEMPERATURE:25
+* /ID:AIRCONDITIONER IN
+* /AIRCONDITIONER
+* /airconditionerStatus: (1 : on, 0 : off)
+* /temp :
+* /airconditionerMode: (COLD:1, DRY:2)
+* /airconditionerTemp: 
+* /airconditionerSpeed: (speed : 1, 2, 3)
+* ex) /AIRCONDITIONER /airconditionerStatus:1 /temp:25 /airconditionerMode:1 /airconditionerTemp: 25 /airconditionerSpeed:3
 #### Windows (WD)
-* /WD
-* /WDONOFF: (1 : on, 0 : off)
-ex) /WD /WDONOFF:1
+* /ID:WINDOW IN
+* /WINDOW
+* /windowStatus: (1 : on, 0 : off)
+ex) /WINDOW /windowStatus:1
 
 ## Data Share
 
@@ -73,7 +76,6 @@ ex) /WD /WDONOFF:1
 * %로 출력
 ### 얼굴 못 찾음
 * /null
-
 
 
 

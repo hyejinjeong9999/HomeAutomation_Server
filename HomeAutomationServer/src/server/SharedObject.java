@@ -2,6 +2,8 @@ package server;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.codec.binary.Base64;
@@ -14,7 +16,7 @@ import model.SensorDataVO;
 /// ------------공유객체
 class SharedObject {
 	String TAG = "SharedObject";
-	ArrayList<MultiThreadRunnable> clientList = new ArrayList<>(); // 안드로이드 저장
+	Map<String, MultiThreadRunnable> clientList = new HashMap<String, MultiThreadRunnable>();
 	ArrayList<MultiThreadRunnable> matlabList = new ArrayList<>();
 	ArrayList<MultiThreadRunnable> moduleList = new ArrayList<>(); // 모듈들 저장
 
@@ -22,8 +24,8 @@ class SharedObject {
 	public void addClients(String msg, MultiThreadRunnable list) {
 		if (msg.contains("ANDROID")) {
 			// 안드로이드로 접속하면 안드로이드list에 저장
-			clientList.add(list);
-			System.out.println("client접속 : " + clientList.get(0));
+			clientList.put(msg, list);
+			System.out.println("client접속 : " + clientList.get(msg));
 			
 			
 			
@@ -41,8 +43,9 @@ class SharedObject {
 
 	// 접속종료 : clientList의 해당 runnable 삭제
 	public void removeClients(String moduleID, MultiThreadRunnable runnable) {
-
-		clientList.remove(runnable);
+		System.out.println("나가려는 ID " + moduleID);
+		clientList.remove(moduleID);
+		System.out.println("나간 후 클라이언트 리스트 개수" +clientList.size() );
 
 	}
 
@@ -95,17 +98,18 @@ class SharedObject {
 	// json 형태로 바꿔서 안드로이드로 보내는 send 함수
 	public void sendJsonDataToAndroid(SensorDataVO sensorDataVO) {
 		
-			System.out.println("-----------vo객체 전송 : ---------");
+			//System.out.println("-----------vo객체 전송 : ---------");
 			if (clientList.size() > 0) {
-				for (MultiThreadRunnable runnable : clientList) {
+				for (String key : clientList.keySet()) {
+					
 					ObjectMapper objectMapper = new ObjectMapper();
 					String jsonData;
 					try {
 						jsonData = objectMapper.writeValueAsString(sensorDataVO);
-						System.out.println("JSON DATA==" + jsonData);
+						//System.out.println("JSON DATA==" + jsonData);
 						
-						runnable.getPrintWriter().println(jsonData);
-						runnable.getPrintWriter().flush();
+						clientList.get(key).getPrintWriter().println(jsonData);
+						clientList.get(key).getPrintWriter().flush();
 					} catch (JsonProcessingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
