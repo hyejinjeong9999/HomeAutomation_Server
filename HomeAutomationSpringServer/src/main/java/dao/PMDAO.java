@@ -35,6 +35,8 @@ public class PMDAO {
 					+ "openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?"
 					+ "serviceKey=ZPORsqYHYcLYLiUhda7AF57glbFasbIscQpUMuWawiKHehhm4s2gy5LdzKbHNzqpZpUUlXyEPOcFy%2F5uFHLZxQ%3D%3D&numOfRows=2&pageNo=1&"
 					+ "stationName=강남구&dataTerm=DAILY&ver=1.3&_returnType=json";
+			
+			//http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?serviceKey=ZPORsqYHYcLYLiUhda7AF57glbFasbIscQpUMuWawiKHehhm4s2gy5LdzKbHNzqpZpUUlXyEPOcFy%2F5uFHLZxQ%3D%3D&numOfRows=2&pageNo=1&stationName=강남구&dataTerm=DAILY&ver=1.3&_returnType=json
 
 			URL url = new URL(urlstr);
 			BufferedReader bf;
