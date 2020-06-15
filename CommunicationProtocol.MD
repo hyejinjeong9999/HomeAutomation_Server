@@ -72,10 +72,11 @@ ex) /WINDOW /windowStatus:1
 * /FACE
 ## Matlab => Server
 ### 얼굴 찾음
+* /FACE 0.9854 0.045 0.345 0.345
 * ex) 0.9854 0.045 0.345 0.345
 * %로 출력
 ### 얼굴 못 찾음
-* /null
+* /FACE NULL
 
 
 

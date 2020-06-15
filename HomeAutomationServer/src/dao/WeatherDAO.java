@@ -29,54 +29,7 @@ public class WeatherDAO {
 			// 날씨 정보를 받아온다.
 			bf = new BufferedReader(new InputStreamReader(url.openStream()));
 
-//			// 버퍼에 있는 정보를 문자열로 변환 -> JSON 확인
-//			while ((line = bf.readLine()) != null) {
-//				result = result.concat(line);
-//				System.out.println(line);
-//			}
-//			
-//			// 문자열을 JSON으로 파싱
-//			JSONParser jsonParser = new JSONParser();
-//			JSONObject jsonObj = (JSONObject) jsonParser.parse(result);
-			
-//			// 지역 저장
-//			String name = (String) jsonObj.get("name");
-//			vo.setName(name);
-//			System.out.println("Name : " + vo.getName());
-//
-//			// 최고온도
-//			String tempMax = (String) jsonObj.get("tempMax");
-//			vo.setName(tempMax);
-//			System.out.println("tempMax : " + vo.getTempMax());
-//
-//			// 습도
-//			String humidity = (String) jsonObj.get("humidity");
-//			vo.setName(humidity);
-//			System.out.println("humidity : " + vo.getHumidity());
-//
-//			// 현재온도
-//			String temp = (String) jsonObj.get("temp");
-//			vo.setName(temp);
-//			System.out.println("temp : " + vo.getTemp());
-//
-//			// 체감온도
-//			String feelsLike = (String) jsonObj.get("feelsLike");
-//			vo.setName(feelsLike);
-//			System.out.println("feelsLike : " + vo.getFeelsLike());
-//
-//			// 날씨
-//			String weather = (String) jsonObj.get("weather");
-//			vo.setName(weather);
-//
-//			// pm10
-//			String pm10Value = (String) jsonObj.get("pm10Value");
-//			vo.setName(pm10Value);
-//
-//			// pm25
-//			String pm25Value = (String) jsonObj.get("pm25Value");
-//			vo.setName(pm25Value);
-			
-			
+
 			
 			String line1;
             StringBuffer stringBuffer = new StringBuffer();

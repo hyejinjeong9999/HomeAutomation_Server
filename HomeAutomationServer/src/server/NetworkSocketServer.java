@@ -2,13 +2,13 @@ package server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import dao.LogDAO;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -17,6 +17,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
+import model.LogVO;
 import model.SensorDataVO;
 
 public class NetworkSocketServer extends Application {
@@ -26,13 +27,13 @@ public class NetworkSocketServer extends Application {
 	Socket socket;
 	private BufferedReader bufferedReader;
 	MultiThreadRunnable runnable;
-	SharedObject sharedObject = new SharedObject();
+	SharedObject sharedObject ;
 	SensorDataVO vo = new SensorDataVO();
 	ObjectOutputStream objectOutputStream;
 	Object obj = new Object();
-	String ml = "MATLAB"; 
-	
-
+	String ml = "MATLAB";
+	LogDAO logDAO ;
+	LogVO logVO;
 	// private BufferedWriter socketBW;
 
 	ExecutorService executorService = Executors.newCachedThreadPool();
@@ -56,22 +57,28 @@ public class NetworkSocketServer extends Application {
 		btn.setPrefSize(250, 50);
 		btn.setOnAction(e -> {
 			Runnable r = new Runnable() {
-				
+
 				public void run() {
 					try {
 						serverSocket = new ServerSocket(1357);
 						printMSG("연결성공");
+						logVO = new LogVO();
+						logDAO = new LogDAO(logVO);
+						logDAO.dbConn();
+						logDAO.dbSelect(); // dbselect test
+						sharedObject= new SharedObject(logDAO,logVO);
 						while (true) {
 							synchronized (obj) {
 								socket = serverSocket.accept();
 								printMSG(socket.getInetAddress().toString());
-								
-								//matlab일 경우 
-								if(socket.getInetAddress().toString().equals("/70.12.60.91")) {
+
+								// matlab일 경우
+								if (socket.getInetAddress().toString().equals("/70.12.60.91")) {
 									System.out.println("matlap runnable");
-									runnable = new MultiThreadRunnable(socket, sharedObject, vo, objectOutputStream, ml);
-								//아닌 경우
-								}else {
+									runnable = new MultiThreadRunnable(socket, sharedObject, vo, objectOutputStream,
+											ml);
+									// 아닌 경우
+								} else {
 									runnable = new MultiThreadRunnable(socket, sharedObject, vo, objectOutputStream);
 								}
 								executorService.execute(runnable);
@@ -80,7 +87,7 @@ public class NetworkSocketServer extends Application {
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						System.out.println("IOException=="+e);
+						System.out.println("IOException==" + e);
 					}
 				}
 			};
