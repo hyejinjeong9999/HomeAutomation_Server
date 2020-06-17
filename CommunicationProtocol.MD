@@ -81,3 +81,44 @@ ex) /WINDOW /windowStatus:1
 
 
 
+
+# MODE
+
+### SMART
+
+* 공기기청정기 작동
+* 에어컨 설정온도보다 실내온도가 높을 경우 에어컨 작동
+* 실내 pm10이 35 이상일 경우 창문 열기
+  * 비, 눈, 안개가 낀 경우 열지 않기
+  * 외부 pm10이 81이상인 경우 열지 않기
+  * 창문이 열릴 경우 공기청정기 끄기
+  * 창문 연 후에 10후에 자동으로 닫히기
+
+* setMode("SMART")
+
+### SLEEP
+
+* 불 점등
+
+* setMode(SLEEP)
+* WINDOW LIGHTOFF
+
+### VENTILATION
+
+* 창문 열기, 공기청정기 끄기, 에어컨 끄기
+* setMode(VENTILATION)
+* WINDOW ON
+* AIRPURIFIER OFF
+* AIRCONDITIONER OFF
+
+### OUTING
+
+* 에어컨 끄기, 불 점등
+* AIRCONDITIONER OFF
+* WINDOW LIGHTOFF
+
+
+
+
+
+

@@ -21,7 +21,7 @@ class SharedObject {
 	Map<String, MultiThreadRunnable> clientList = new HashMap<String, MultiThreadRunnable>();
 	ArrayList<MultiThreadRunnable> matlabList = new ArrayList<>();
 	ArrayList<MultiThreadRunnable> moduleList = new ArrayList<>(); // 모듈들 저장
-	double[] faceResult = new double[4];
+	double[] faceResult = new double[3];
 	String email = "";
 	LogDAO logDAO;
 	LogVO logVO;
@@ -96,26 +96,30 @@ class SharedObject {
 		System.out.println("checkFace Test =====> " + faceResult[0]);
 
 		for (int i = 0; i < faceResult.length; i++) {
-			if (faceResult[i] >= 0.5) {
+			if (faceResult[i] >= 0.8) {
 
 				System.out.println("checkFace Test 성공" + faceResult[i]);
 
 				if (moduleList.size() > 0) {
 					for (MultiThreadRunnable runnable : moduleList) {
 						if (runnable.getModuleID().equals("WINDOW")) {
-							runnable.getPrintWriter().println("ON");
+							runnable.getPrintWriter().println("DOOR");
 							runnable.getPrintWriter().flush();
 
 							logDAO.dbUpdate(email, "DOOR", Double.toString(faceResult[i]));
-							///DB에 저장
+							/// DB에 저장
+							
+							break;
 						}
 					}
 				}
 
-			} else
+			} else {
 				// this.sendTOModule("FAIL", "WINDOW");
 				System.out.println("checkFace Test 실패" + faceResult[i]);
+				logDAO.dbUpdate(email, "DOOR", "ERROR");
 
+			}
 		}
 
 	}
@@ -157,9 +161,11 @@ class SharedObject {
 					runnable.getPrintWriter().flush();
 
 					// 모듈 ON, OFF 일시 DB에 저장
-					if (value.equals("ON") || value.equals("OFF")) {
+					if (value.contains("ON") || value.contains("OFF")) {
 						System.out.println("module if문");
-						System.out.println("sendTOModule Test ModeulID = " + moduleID);
+						System.out.println("sendTOModule Test 처리 전 ModeulID = " + moduleID);
+						moduleID =  value.contains("LIGHT") ? "LIGHT" : moduleID;
+						System.out.println("sendTOModule Test 처리 후 ModeulID = " + moduleID);
 						for (String key : clientList.keySet()) {
 							// System.out.println("sendTOModule Test" + key);
 							if (key.equals(moduleID)) {

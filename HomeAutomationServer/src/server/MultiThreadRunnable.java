@@ -29,7 +29,6 @@ public class MultiThreadRunnable implements Runnable {
 	String order;
 	boolean testStatus = false;
 
-
 	// client, module list 생성
 
 	public String getModuleID() {
@@ -85,7 +84,7 @@ public class MultiThreadRunnable implements Runnable {
 		try {
 			// 값들을
 			while ((msg = bufferedReader.readLine()) != null) {
-				System.out.println("test==" + msg);
+				//System.out.println("test==" + msg);
 				if (msg.contains("ANDROID>")) {
 					order = msg.replace("/ANDROID>", "");
 
@@ -111,13 +110,23 @@ public class MultiThreadRunnable implements Runnable {
 							sensorDataVO.setMode("SMART");
 							// smart 모드
 							// 온도가 높으면 에어컨 //실내 대기질 나쁨 -> 날씨, 실외대기질, window
-						} else if (msg.contains("SLEEP")) {
+						} else if (msg.contains("OFF")) {
+							/**
+							 * 수면모드 : 전등 OFF
+							 */
+							System.out.println("SMART 모드 OFF");
+
+							sensorDataVO.setMode("OFF");
+
+						}
+
+						else if (msg.contains("SLEEP")) {
 							/**
 							 * 수면모드 : 전등 OFF
 							 */
 							System.out.println("SLEEP모드 시작");
 
-							order = "LIGHT OFF";
+							order = "WINDOW LIGHTOFF";
 							sharedObject.sendTOModule(order, moduleID);
 
 							sensorDataVO.setMode("SLEEP");
@@ -129,7 +138,7 @@ public class MultiThreadRunnable implements Runnable {
 							System.out.println("VENTILATION모드 시작");
 							sensorDataVO.setMode("VENTILATION");
 
-							order = "WINDOW OPEN";
+							order = "WINDOW ON";
 							sharedObject.sendTOModule(order, moduleID);
 
 							order = "AIRPURIFIER OFF";
@@ -148,8 +157,13 @@ public class MultiThreadRunnable implements Runnable {
 							order = "AIRCONDITIONER OFF";
 							sharedObject.sendTOModule(order, moduleID);
 
-							order = "LIGHT OFF";
+							order = "WINDOW LIGHTOFF";
 							sharedObject.sendTOModule(order, moduleID);
+							
+							order = "WINDOW OFF";
+							sharedObject.sendTOModule(order, moduleID);
+							
+							//WINDOW LIGHTON  // WINDOW LIGHTOFF
 						}
 						sharedObject.sendJsonDataToAndroid(sensorDataVO);
 					}
@@ -164,9 +178,9 @@ public class MultiThreadRunnable implements Runnable {
 					}
 
 				}
-
+				//Start Smart Mode
 				if (sensorDataVO.getMode().equals("SMART")) {
-					// 스마트모드일 경우 실행
+					
 					System.out.println("--------------스마트모드실행중----------");
 					weatherVO = weatherDAO.getWeather();
 
@@ -189,12 +203,12 @@ public class MultiThreadRunnable implements Runnable {
 					}
 
 					// 온도가 높으면 에어컨 키기
-					System.out.println("weatherVO.getTemp()==================" + weatherVO.getTemp());
+					System.out.println("SMART MODE 기본 희망온도 " + weatherVO.getTemp());
 					if (Double.parseDouble(weatherVO.getTemp()) > Double
 							.parseDouble(sensorDataVO.getAirconditionerTemp())
 							&& sensorDataVO.getAirconditionerStatus().equals("OFF")) {
 						// 실내온도 (getTemp)가 희망온도 (getAirconditionerTemp)보다 놓으면 동작
-						System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~에어컨킴");
+						System.out.println("===SMART 모드 에어컨 작동 ===");
 						order = "AIRCONDITIONER ON";
 						sharedObject.sendTOModule(order, moduleID);
 					}
@@ -226,7 +240,7 @@ public class MultiThreadRunnable implements Runnable {
 
 							if ((startTime - endTime) / 1000 == 600) {
 
-								order = "WINDOW CLOSE";
+								order = "WINDOW OFF";
 								sharedObject.sendTOModule(order, moduleID);
 
 								testStatus = false;
@@ -238,7 +252,7 @@ public class MultiThreadRunnable implements Runnable {
 					}
 					sharedObject.sendJsonDataToAndroid(sensorDataVO);
 
-				}
+				}///End SmartMode
 
 				if (msg.contains("/ID:")) {
 					st = new StringTokenizer(msg, " ");
@@ -251,10 +265,15 @@ public class MultiThreadRunnable implements Runnable {
 						this.moduleID = st.nextToken().replace("/ID:", "");
 
 						// this.moduleID = msg.replace("/ID:ANDROID IN>", "");
-
+						
 						System.out.println("안드로이드 접속아이디" + this.moduleID);
 						sharedObject.addClients(this.moduleID, this);
 						sharedObject.sendJsonDataToAndroid(sensorDataVO);
+						
+						//안드로이드 접속할 때 불 켜기
+						order = "WINDOW LIGHTON";
+						sharedObject.sendTOModule(order, moduleID);
+						
 						continue;
 
 					} else {
@@ -274,6 +293,12 @@ public class MultiThreadRunnable implements Runnable {
 					sensorDataVO.setDust25(st.nextToken().replace("/dust25:", ""));
 					sensorDataVO.setDust10(st.nextToken().replace("/dust10:", ""));
 					sensorDataVO.setGasStatus(st.nextToken().replace("/gasStatus:", ""));
+					//가스 900 이상이면 창문 열기
+					if(Integer.parseInt(sensorDataVO.getGasStatus()) >900) {
+						System.out.println("AIRPURIFIER : ========가스 감지==========" + sensorDataVO.getGasStatus());
+						order = "WINDOW ON";
+						sharedObject.sendTOModule(order, moduleID);
+					}
 
 					// 에어컨
 				} else if (msg.startsWith("/AIRCONDITIONER")) {
@@ -305,7 +330,6 @@ public class MultiThreadRunnable implements Runnable {
 
 					String order = msg.replace("/FACE ", "");
 					sharedObject.checkFace(order);
-					
 
 				}
 
